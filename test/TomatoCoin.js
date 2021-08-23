@@ -15,7 +15,7 @@ describe("TomatoCoin Tests", function () {
     beforeEach(async function () {
         [owner, treasury, guest1, guest2] = await ethers.getSigners();
 
-        this.coin = await this.TomatoCoin.deploy(treasury.getAddress());
+        this.coin = await this.TomatoCoin.deploy(owner.getAddress(), treasury.getAddress());
         await this.coin.deployed();
       });
     
