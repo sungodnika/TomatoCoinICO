@@ -89,5 +89,19 @@ describe("TomatoCoinICO", function () {
 
     });
 
+    it("test whether funds can be withdrawn", async function () {
+        
+        await expect(this.ico.connect(guest1).withdraw(treasury.address, 50)).to.be.reverted;
+        await expect(this.ico.advancePhase()).to.emit(this.ico, "PhaseChanged");
+        await expect(this.ico.connect(guest2).contribute({ value:150 })).to.emit(this.ico, "Contribute");
+        await expect(this.ico.advancePhase()).to.emit(this.ico, "PhaseChanged");
+        await expect(this.ico.connect(guest1).contribute({ value:100 })).to.emit(this.ico, "Contribute");
+        const treasuryBalanceInit = await ethers.provider.getBalance(treasury.address);
+        await expect(this.ico.withdraw(treasury.address, 50)).to.emit(this.ico, 'Withdraw');
+        const treasuryBalanceFinal = await ethers.provider.getBalance(treasury.address);
+        expect(treasuryBalanceFinal).to.equal(treasuryBalanceInit.add(50));
+        
+    })
+
 
 });

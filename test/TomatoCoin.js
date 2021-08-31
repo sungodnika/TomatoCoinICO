@@ -20,14 +20,14 @@ describe("TomatoCoin Tests", function () {
       });
     
     it("test the starting allocation", async function () {
-        expect(await this.coin.balanceOf(treasury.address)).to.equal("50000000000000000000000");
+        expect(await this.coin.balanceOf(treasury.address)).to.equal("150000000000000000000000");
     });
     it("test minting", async function () {
         await this.coin.mint(owner.address, 1000);
         await this.coin.transfer(guest1.address, 500);
         expect(await this.coin.balanceOf(owner.address)).to.eq(500);
         expect(await this.coin.balanceOf(guest1.address)).to.eq(500);
-        expect(await this.coin.balanceOf(treasury.address)).to.equal("50000000000000000000000");
+        expect(await this.coin.balanceOf(treasury.address)).to.equal("150000000000000000000000");
     });
 
     it("test tax transfers", async function () {
@@ -36,7 +36,7 @@ describe("TomatoCoin Tests", function () {
         await this.coin.transfer(guest1.address, 500);
         expect(await this.coin.balanceOf(owner.address)).to.eq(500);
         expect(await this.coin.balanceOf(guest1.address)).to.eq(490);
-        expect(await this.coin.balanceOf(treasury.address)).to.equal("50000000000000000000010");
+        expect(await this.coin.balanceOf(treasury.address)).to.equal("150000000000000000000010");
 
     });
 

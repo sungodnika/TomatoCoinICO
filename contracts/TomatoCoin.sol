@@ -10,7 +10,7 @@ contract TomatoCoin is ERC20 {
     bool public taxable;
 
     uint constant public TOTAL_SUPPLY = 500000;
-    uint constant public INITIAL_SUPPLY = TOTAL_SUPPLY / 10;
+    uint constant public INITIAL_SUPPLY = 150000;
     uint constant public TAX_RATE = 2;
 
     constructor(address _owner, address _treasury) ERC20("TomatoCoin", "TOM") {

@@ -34,6 +34,8 @@ contract TomatoCoinICO is Pausable, Ownable {
     event RedeemedCoins(address redeemer, uint amount);
     event AddedPrivateInvestor(address privateInvestor);
     event RemovedPrivateInvestor(address privateInvestor);
+    event Withdraw(address withdrawer, uint amount);
+
 
     function addPrivateInvestor(address privateInvestor) external onlyOwner {
         require(privateInvestor != address(0), "address should be non zero");
@@ -87,6 +89,18 @@ contract TomatoCoinICO is Pausable, Ownable {
         tomatoCoin.mint(msg.sender, tomatoCoins);
         emit RedeemedCoins(msg.sender, tomatoCoins);
     } 
+
+    function withdraw(address _to, uint amount) external onlyOwner returns(bool) {
+        require(phase == Phase.OPEN, "The ICO is should be open");
+        require(totalRaised > amount, 'Out of funds');
+        totalRaised-=amount;
+        (bool success, ) = _to.call{value: amount}("");
+        if(success) {
+        emit Withdraw(_to, amount);
+        }
+        require(success, 'fund transfer failed');
+        return success;
+    }
 
     function pause() external whenNotPaused onlyOwner {
         _pause();
