@@ -22,7 +22,6 @@ contract TomatoCoinICO is Pausable, Ownable {
     constructor(address _treasury) {
         require(_treasury != address(0), "address should be non zero");
         tomatoCoin = new TomatoCoin(msg.sender, _treasury);
-        emit TomatoCoinCreation(address(tomatoCoin));
     }
 
     receive() external payable {
@@ -30,7 +29,6 @@ contract TomatoCoinICO is Pausable, Ownable {
     }
 
     // events
-    event TomatoCoinCreation(address coinAddress);
     event PhaseChanged(Phase newPhase);
     event Contribute(address contributer, uint amount);
     event RedeemedCoins(address redeemer, uint amount);
