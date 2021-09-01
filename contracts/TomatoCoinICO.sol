@@ -21,7 +21,7 @@ contract TomatoCoinICO is Pausable, Ownable {
 
     constructor(address _treasury) {
         require(_treasury != address(0), "address should be non zero");
-        tomatoCoin = new TomatoCoin(_treasury);
+        tomatoCoin = new TomatoCoin(msg.sender, _treasury);
     }
 
     receive() external payable {
@@ -32,15 +32,21 @@ contract TomatoCoinICO is Pausable, Ownable {
     event PhaseChanged(Phase newPhase);
     event Contribute(address contributer, uint amount);
     event RedeemedCoins(address redeemer, uint amount);
+    event AddedPrivateInvestor(address privateInvestor);
+    event RemovedPrivateInvestor(address privateInvestor);
+    event Withdraw(address withdrawer, uint amount);
+
 
     function addPrivateInvestor(address privateInvestor) external onlyOwner {
         require(privateInvestor != address(0), "address should be non zero");
         privateInvestors[privateInvestor] = true;
+        emit AddedPrivateInvestor(privateInvestor);
     }
 
     function removePrivateInvestor(address privateInvestor) external onlyOwner {
         require(privateInvestor != address(0), "address should be non zero");
         privateInvestors[privateInvestor] = false;
+        emit RemovedPrivateInvestor(privateInvestor);
     }
 
     function advancePhase() external onlyOwner {
@@ -57,13 +63,13 @@ contract TomatoCoinICO is Pausable, Ownable {
     function contribute() payable external whenNotPaused {
         if (phase == Phase.SEED) {
             require(privateInvestors[msg.sender] == true, "This phase is open only for private investors");
-            require(msg.value <= 1500 ether, "Contribution above individual threshold");
+            require(contributions[msg.sender] + msg.value <= 1500 ether, "Contribution above individual threshold");
             require(totalRaised + msg.value <= 15000 ether, "Total contribution above threshold");
             contributions[msg.sender] += msg.value;
             totalRaised += msg.value;
             emit Contribute(msg.sender, msg.value);
         } else if(phase == Phase.GENERAL) {
-            require(msg.value <= 1000 ether, "Contribution above individual threshold");
+            require(contributions[msg.sender] + msg.value <= 1000 ether, "Contribution above individual threshold");
             require(totalRaised + msg.value <= 30000 ether, "Total contribution above threshold");
             contributions[msg.sender] += msg.value;
             totalRaised += msg.value;
@@ -83,4 +89,28 @@ contract TomatoCoinICO is Pausable, Ownable {
         tomatoCoin.mint(msg.sender, tomatoCoins);
         emit RedeemedCoins(msg.sender, tomatoCoins);
     } 
+
+    function withdraw(address _to, uint amount) external onlyOwner returns(bool) {
+        require(phase == Phase.OPEN, "The ICO is should be open");
+        require(totalRaised > amount, 'Out of funds');
+        totalRaised-=amount;
+        (bool success, ) = _to.call{value: amount}("");
+        if(success) {
+        emit Withdraw(_to, amount);
+        }
+        require(success, 'fund transfer failed');
+        return success;
+    }
+
+    function pause() external whenNotPaused onlyOwner {
+        _pause();
+    }
+
+    function unpause() external whenPaused onlyOwner{
+        _unpause();
+    }
+
+    function getTomatoCoin() external view returns(TomatoCoin) {
+        return tomatoCoin;
+    }
 }
