@@ -7,7 +7,7 @@ const ALCHEMY_API_KEY = "https://eth-rinkeby.alchemyapi.io/v2/4Nfc6gWmOTNNuacLxa
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
 // Be aware of NEVER putting real Ether into testing accounts
-const RINKEBY_PRIVATE_KEY = "";
+const RINKEBY_PRIVATE_KEY = "7019f41da859ae8234d8ce6cee94cc92b0f60aa6d9eed433474082cffcd1e084";
 
 module.exports = {
   solidity: "0.8.7",
